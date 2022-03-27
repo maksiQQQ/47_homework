@@ -31,10 +31,7 @@ def add():
     page[f'A{len(goods_list)+1}'] = good
     excel.save('goods.xlsx')
     return render_template('add.html')
-    # return '''
-    #     <h1>Инвентарь пополнен</h1>
-    #     <a href='/'>Домой</a>
-    # '''
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
