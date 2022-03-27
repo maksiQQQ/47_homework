@@ -1,19 +1,40 @@
 from openpyxl import load_workbook
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
+excel = load_workbook('goods.xlsx')
 
 
 @app.route('/')
 def main():
-    excel = load_workbook('goods.xlsx')
     page = excel['Лист1']
-    goods_list = [
-        page['A1'].value, page['A2'].value, page['A3'].value, 
-        page['A4'].value, page['A5'].value, page['A6'].value
-    ]
+    row = page['A']
+    goods_list = []
+    for i in range(len(row)):
+        goods_list.append(row[i].value)
+    if len(row) > len(goods_list):
+        goods_list.append(page[f'A{len(goods_list)+1}'].value)
     return render_template('index.html', goods=goods_list)
+
+
+@app.route('/add/', methods=['POST'])
+def add():
+    good = request.form['good']
+    page = excel['Лист1']
+    row = page['A']
+    goods_list = []
+    for i in range(len(row)):
+        goods_list.append(row[i].value)
+    if len(row) > len(goods_list):
+        goods_list.append(page[f'A{len(goods_list)+1}'].value)
+    page[f'A{len(goods_list)+1}'] = good
+    excel.save('goods.xlsx')
+    return render_template('add.html')
+    # return '''
+    #     <h1>Инвентарь пополнен</h1>
+    #     <a href='/'>Домой</a>
+    # '''
 
 if __name__ == '__main__':
     app.run(debug=True)
